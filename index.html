@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tủ sách hướng nghiệp</title>
+<meta name="description" content="Sách lật đọc thử miễn phí cho học sinh, sinh viên và phụ huynh đang phân vân chọn ngành, muốn bỏ ngành hoặc bất đồng về ngành học.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600&family=Lexend:wght@500;600;700&display=swap">
+<script>
+/* ====== CẤU HÌNH: chỉ cần sửa ở đây ====== */
+const CONFIG = {
+  // Dán URL Web App của Google Apps Script vào giữa hai dấu nháy (xem HUONG-DAN.md, bước 3).
+  SCRIPT_URL: "https://script.google.com/macros/s/AKfycbxdjxoEx2n5aoYTJHEwryGjuD4FBkD70lkLTPqv1k5lMlAcPxzWG04JT54t1Mxi-YYF/exec",
+  // true = hiện dòng "Bản thử nghiệm". Đổi thành false khi đối tác đã duyệt nội dung.
+  BAN_THU: true
+};
+</script>
+<style>
+:root{
+  --bg:#F4F6FA; --surface:#FFFFFF; --ink:#18203D; --muted:#5A6283; --line:#DDE2EE;
+  --accent:#2F45C9; --accent-ink:#FFFFFF; --sign:#F2B705; --sign-ink:#1E1A05;
+  --ok-bg:#E4F4EA; --warn:#B26A00; --warn-bg:#FBF0DC; --bad:#B3261E;
+  --display:"Lexend","Be Vietnam Pro",system-ui,sans-serif;
+  --body:"Be Vietnam Pro",system-ui,-apple-system,"Segoe UI",sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#0F1426; --surface:#171E36; --ink:#E7EAF6; --muted:#A3AAC6; --line:#2A3354;
+  --accent:#8C9BFF; --accent-ink:#0F1426; --sign:#F5C430;
+  --ok-bg:#16301F; --warn:#F0B35A; --warn-bg:#33270F; --bad:#FF8E85; color-scheme:dark}}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+img{max-width:100%}
+[hidden]{display:none!important}
+.wrap{max-width:980px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 56px}
+h1,h2,h3{font-family:var(--display);line-height:1.25;text-wrap:balance;margin:0}
+h1{font-size:clamp(1.7rem,4vw,2.4rem)} h2{font-size:1.35rem} h3{font-size:1.05rem}
+p{margin:0}
+.test-note{background:var(--warn-bg);border:1px solid var(--line);border-radius:8px;padding:10px 14px;font-size:.88rem}
+.test-note b{color:var(--warn)}
+.top{display:flex;align-items:center;gap:12px;margin-block:18px 28px}
+.brand{font-family:var(--display);font-weight:600;font-size:1.05rem;display:flex;align-items:center;gap:10px}
+.sign{display:inline-block;background:var(--sign);color:var(--sign-ink);font-family:var(--display);font-weight:700;font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;padding:3px 8px;border-radius:3px}
+.btn{font:inherit;font-weight:600;border:0;border-radius:8px;padding:12px 18px;cursor:pointer;background:var(--accent);color:var(--accent-ink)}
+.btn[disabled]{opacity:.55;cursor:wait}
+.btn:focus-visible,select:focus-visible,input:focus-visible,.book:focus-visible,.back:focus-visible{outline:3px solid var(--sign);outline-offset:2px}
+.lead{color:var(--muted);max-width:62ch;margin-top:10px}
+.shelf{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px;margin-top:28px}
+.book{background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow:hidden;display:flex;flex-direction:column;text-align:left;font:inherit;color:inherit;cursor:pointer;padding:0}
+.book:hover{border-color:var(--accent)}
+.cover{aspect-ratio:4/3;max-width:100%;padding:18px;display:flex;flex-direction:column;justify-content:space-between;color:#fff}
+.cover .t{font-family:var(--display);font-weight:700;font-size:1.3rem;line-height:1.2}
+.book .meta{padding:14px 16px 18px;display:grid;gap:6px}
+.book .for{font-size:.85rem;color:var(--muted)}
+.c-a{background:#2F45C9}.c-b{background:#0E6E6A}.c-d{background:#7A3E9D}
+.grid2{display:grid;grid-template-columns:1.1fr .9fr;gap:28px;margin-top:22px;align-items:start}
+.grid2>*{min-width:0}
+@media (max-width:760px){.grid2{grid-template-columns:1fr}}
+.pains{display:grid;gap:10px;margin:16px 0 0;padding:0;list-style:none}
+.pains li{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 14px}
+.flip{background:var(--surface);border:1px solid var(--line);border-radius:10px;margin-top:22px}
+.page{min-height:250px;padding:22px 22px 10px;display:grid;gap:10px;align-content:start}
+.page .k{font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.page ul{margin:0;padding-left:20px;display:grid;gap:4px}
+.page .src{font-size:.78rem;color:var(--muted)}
+.flipnav{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-top:1px solid var(--line)}
+.flipnav button{font:inherit;background:transparent;border:1px solid var(--line);color:var(--ink);border-radius:6px;padding:6px 12px;cursor:pointer}
+.flipnav button[disabled]{opacity:.4;cursor:default}
+.count{font-variant-numeric:tabular-nums;color:var(--muted);font-size:.9rem}
+form{background:var(--surface);border:2px solid var(--accent);border-radius:10px;padding:20px;display:grid;gap:14px}
+label{display:grid;gap:5px;font-weight:500;font-size:.93rem}
+input,select{font:inherit;padding:10px 12px;border-radius:7px;border:1px solid var(--line);background:var(--bg);color:var(--ink);width:100%}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.fine{font-size:.8rem;color:var(--muted)}
+.done{background:var(--ok-bg);border-radius:10px;padding:20px;display:grid;gap:8px}
+.back{background:none;border:0;color:var(--accent);font:inherit;cursor:pointer;padding:0;font-weight:600}
+.err{color:var(--bad);font-size:.88rem}
+@media (prefers-reduced-motion:no-preference){.book{transition:border-color .15s}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="test-note" id="test-note" hidden><b>Bản thử nghiệm.</b> Nội dung sách đang là bản nháp, chưa được duyệt chính thức.</p>
+
+  <div class="top"><div class="brand"><span class="sign">Ngã rẽ</span> Tủ sách hướng nghiệp</div></div>
+
+  <main id="v-home">
+    <h1>Đang đứng ở ngã rẽ chọn ngành? Lật thử một cuốn.</h1>
+    <p class="lead">Mỗi cuốn dành cho một tình huống. Đọc thử miễn phí, không cần đăng ký. Muốn bản đầy đủ để in thì để lại Zalo.</p>
+    <div class="shelf" id="shelf"></div>
+  </main>
+
+  <main id="v-book" hidden>
+    <button class="back" type="button" id="back-home">← Xem các cuốn khác</button>
+    <div class="grid2">
+      <div>
+        <span class="sign" id="b-sign"></span>
+        <h1 id="b-title" style="margin-top:10px"></h1>
+        <p class="lead" id="b-for"></p>
+        <ul class="pains" id="b-pains"></ul>
+        <div class="flip" aria-label="Đọc thử">
+          <div class="page" id="b-page" aria-live="polite"></div>
+          <div class="flipnav">
+            <button type="button" id="prev">‹ Trang trước</button>
+            <span class="count" id="pcount"></span>
+            <button type="button" id="next">Trang sau ›</button>
+          </div>
+        </div>
+      </div>
+      <div>
+        <form id="f" novalidate>
+          <h2>Nhận bản đầy đủ, miễn phí</h2>
+          <label for="f-ten">Họ tên<input id="f-ten" name="ten" autocomplete="name" maxlength="80" required></label>
+          <label for="f-zalo">Số điện thoại có Zalo<input id="f-zalo" name="zalo" type="tel" inputmode="tel" placeholder="09xx xxx xxx" maxlength="15" required></label>
+          <label for="f-email">Email (không bắt buộc)<input id="f-email" name="email" type="email" placeholder="tenban@gmail.com" maxlength="100"></label>
+          <label for="f-vaitro">Bạn là
+            <select id="f-vaitro" name="vaitro" required>
+              <option value="">Chọn một</option>
+              <option value="hs3">Học sinh cấp 3</option>
+              <option value="sv">Sinh viên hoặc mới ra trường</option>
+              <option value="ph3">Phụ huynh có con học cấp 3 hoặc đại học</option>
+              <option value="ph2">Phụ huynh có con học cấp 2</option>
+            </select>
+          </label>
+          <label for="f-tinhhuong">Tình huống gần nhất với bạn
+            <select id="f-tinhhuong" name="tinhhuong" required>
+              <option value="">Chọn một</option>
+              <option value="chon-nganh">Chưa biết chọn ngành</option>
+              <option value="bo-nganh">Muốn bỏ ngành, đổi ngành</option>
+              <option value="ra-truong">Sắp ra trường chưa biết làm gì</option>
+              <option value="bat-dong">Bố mẹ và con bất đồng về ngành, trường</option>
+              <option value="khac">Khác</option>
+            </select>
+          </label>
+          <input type="hidden" id="f-cuavao" name="cua_vao">
+          <input type="hidden" id="f-nguon" name="nguon">
+          <div class="hp" aria-hidden="true"><label for="f-website">Website<input id="f-website" name="website" tabindex="-1" autocomplete="off"></label></div>
+          <p class="err" id="f-err" hidden></p>
+          <button class="btn" id="f-btn" type="submit">Gửi cho tôi bản đầy đủ</button>
+          <p class="fine">Số Zalo chỉ dùng để gửi sách và nhắn khi có buổi chia sẻ phù hợp. Không gọi điện làm phiền, không chia sẻ cho bên thứ ba. Nhắn “DỪNG” là ngừng gửi.</p>
+        </form>
+        <div class="done" id="f-done" hidden>
+          <h2>Đã nhận thông tin</h2>
+          <p>Bản đầy đủ sẽ được gửi qua Zalo trong thời gian sớm nhất.</p>
+          <button class="back" type="button" id="more">Xem các cuốn khác</button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+const BOOKS = [
+  { id:"sp02", code:"SP02-A", cover:"c-a", sign:"Chọn ngành",
+    title:"5 bước khám phá nghề nghiệp",
+    forText:"Dành cho học sinh lớp 11–12 và bố mẹ có con đang phân vân chưa biết chọn ngành nào.",
+    pains:["Hạn đăng ký nguyện vọng đến gần mà vẫn chưa biết mình hợp ngành gì.","Chọn theo bạn bè hoặc theo ngành “hot”, rồi sợ học không nổi.","Đã làm bài trắc nghiệm, đọc kết quả xong vẫn không biết làm gì tiếp."],
+    pages:[
+      {k:"Bìa", h:"5 bước khám phá nghề nghiệp", body:["Đi theo thứ tự: hiểu mình trước, rồi mới hiểu nghề.","Mỗi bước có một việc nhỏ làm được trong tuần này."]},
+      {k:"Bước 1", h:"Hiểu mình", body:["Viết ra 3 việc làm mãi không chán.","Viết ra 3 lần được người khác khen vì làm tốt.","Hai danh sách trùng nhau ở đâu?"]},
+      {k:"Bước 2–3", h:"Tìm hiểu nghề, rồi thử nghề", body:["Chọn 2 nghề, tìm một người đang làm nghề đó để hỏi một ngày làm việc của họ ra sao.","Thử một việc nhỏ của nghề đó trong 7 ngày."]},
+      {k:"Lưu ý", h:"Đừng để bài test chọn thay mình", body:["Trắc nghiệm chỉ nên dùng để bổ sung, không thay được việc tự tìm hiểu."]},
+      {k:"Bản đầy đủ", h:"Bước 4–5 và phiếu in được", body:["Bản đầy đủ có bước chọn ngành, lập kế hoạch và phiếu ghi cho từng bước."]}
+    ]},
+  { id:"sp06", code:"SP06-B", cover:"c-b", sign:"Muốn bỏ ngành",
+    title:"Bỏ ngành hay ở lại?",
+    forText:"Dành cho sinh viên năm 1–2 đang muốn bỏ ngành hoặc đổi ngành mà chưa dám quyết.",
+    pains:["Vào học rồi mới thấy ngành không giống mình nghĩ.","Muốn bỏ nhưng sợ phí mấy năm đã học, sợ bố mẹ buồn.","Không biết mình chán ngành hay chỉ chán cách học hiện tại."],
+    pages:[
+      {k:"Bìa", h:"Bỏ ngành hay ở lại?", body:["Ba câu hỏi để tách cảm xúc ra khỏi quyết định."]},
+      {k:"Câu hỏi 1", h:"Mình chán ngành, hay chán cách học?", body:["Liệt kê môn làm mình mệt nhất. Đó là môn cốt lõi của ngành hay môn đại cương?","Nếu đổi thầy, đổi nhóm học, cảm giác có khác không?"]},
+      {k:"Câu hỏi 2", h:"Lý do chọn ngành lúc đầu là của ai?", body:["Học vì muốn biết thêm thường bền hơn học để bố mẹ hài lòng. Học vì người khác dễ gây căng thẳng, có khi dẫn đến bỏ học."]},
+      {k:"Câu hỏi 3", h:"Mình có thấy tương lai nào ở ngành này?", body:["Biết mình muốn đi tới đâu, trở thành người thế nào, thì mới biết ngành này có đưa mình tới đó không."]},
+      {k:"Bản đầy đủ", h:"Bỏ ngành không phải là hết đường", body:["Học theo tín chỉ và liên thông được thiết kế để người học dễ chuyển đổi ngành nghề.","Bản đầy đủ có bảng chấm “bỏ hay ở” và các bước nói chuyện với gia đình."]}
+    ]},
+  { id:"sp08a", code:"SP08A-DPH", cover:"c-d", sign:"Dành cho bố mẹ",
+    title:"Nói chuyện với con về ngành học mà không cãi nhau",
+    forText:"Dành cho bố mẹ đang bất đồng với con về chọn ngành, chọn trường, hoặc con muốn bỏ ngành.",
+    pains:["Nói chuyện ngành học lần nào cũng thành cãi nhau.","Bố mẹ thấy ngành con chọn khó xin việc, con thì không nghe.","Con im lặng, không chia sẻ mình thật sự muốn gì."],
+    pages:[
+      {k:"Bìa", h:"Nói chuyện với con về ngành học", body:["Một buổi nói chuyện, bốn bước, không ai phải thua."]},
+      {k:"Bước 1", h:"Nghe trước, nói sau", body:["Để con nói hết lý do của mình trước khi bố mẹ đưa ý kiến."]},
+      {k:"Bước 2", h:"Hỏi con: chọn vì ai?", body:["Con học để bố mẹ vui thường dễ căng thẳng hơn con học vì tự muốn."]},
+      {k:"Bước 3", h:"Tránh phê bình nặng lời", body:["Ở tuổi này, bị phê bình nặng lời dễ làm con mất tự tin, nhất là trước mặt người khác."]},
+      {k:"Bản đầy đủ", h:"Bước 4 và câu hỏi mẫu", body:["Bản đầy đủ có 10 câu hỏi mẫu và cách hẹn con cùng tìm hiểu một nghề."]}
+    ]}
+];
+
+const $ = id => document.getElementById(id);
+$("test-note").hidden = !CONFIG.BAN_THU;
+
+// Kênh: lấy từ ?nguon=... hoặc ?utm_source=..., nhớ trong phiên
+(function(){
+  const q = new URLSearchParams(location.search);
+  const n = (q.get("nguon") || q.get("utm_source") || "").toLowerCase().replace(/[^a-z0-9-]/g,"-").slice(0,40);
+  if (n) { try { sessionStorage.setItem("nguon", n); } catch(e){} }
+})();
+function currentNguon(){ try { return sessionStorage.getItem("nguon") || "truc-tiep"; } catch(e){ return "truc-tiep"; } }
+
+// Trang chủ
+BOOKS.forEach(b => {
+  const el = document.createElement("button"); el.type = "button"; el.className = "book";
+  el.innerHTML = '<div class="cover ' + b.cover + '"><span class="sign"></span><span class="t"></span></div><div class="meta"><h3></h3><p class="for"></p></div>';
+  el.querySelector(".sign").textContent = b.sign;
+  el.querySelector(".t").textContent = b.title;
+  el.querySelector("h3").textContent = "Đọc thử " + b.pages.length + " trang";
+  el.querySelector(".for").textContent = b.forText;
+  el.addEventListener("click", () => { location.hash = b.id; });
+  $("shelf").appendChild(el);
+});
+
+// Trang sách
+let book = null, pi = 0;
+function renderPage(){
+  const p = book.pages[pi], el = $("b-page"); el.innerHTML = "";
+  const k = document.createElement("span"); k.className = "k"; k.textContent = p.k;
+  const h = document.createElement("h2"); h.textContent = p.h;
+  const ul = document.createElement("ul");
+  p.body.forEach(t => { const li = document.createElement("li"); li.textContent = t; ul.appendChild(li); });
+  el.append(k, h, ul);
+  $("pcount").textContent = (pi + 1) + " / " + book.pages.length;
+  $("prev").disabled = pi === 0; $("next").disabled = pi === book.pages.length - 1;
+}
+$("prev").onclick = () => { if (pi > 0) { pi--; renderPage(); } };
+$("next").onclick = () => { if (pi < book.pages.length - 1) { pi++; renderPage(); } };
+
+function openBook(id){
+  book = BOOKS.find(b => b.id === id); pi = 0;
+  $("b-sign").textContent = book.sign; $("b-title").textContent = book.title; $("b-for").textContent = book.forText;
+  const ul = $("b-pains"); ul.innerHTML = "";
+  book.pains.forEach(t => { const li = document.createElement("li"); li.textContent = t; ul.appendChild(li); });
+  $("f").reset(); $("f-cuavao").value = book.code; $("f-nguon").value = currentNguon();
+  $("f").hidden = false; $("f-done").hidden = true; $("f-err").hidden = true;
+  document.title = book.title + " · Tủ sách hướng nghiệp";
+  renderPage();
+}
+
+function route(){
+  const id = location.hash.slice(1);
+  const isBook = BOOKS.some(b => b.id === id);
+  $("v-home").hidden = isBook; $("v-book").hidden = !isBook;
+  if (isBook) openBook(id); else document.title = "Tủ sách hướng nghiệp";
+  window.scrollTo(0, 0);
+}
+$("back-home").onclick = $("more").onclick = () => { location.hash = ""; };
+window.addEventListener("hashchange", route);
+
+// Gửi form tới Google Sheets
+$("f").addEventListener("submit", async ev => {
+  ev.preventDefault();
+  const err = $("f-err"); err.hidden = true;
+  const v = id => $(id).value.trim();
+  const row = { ten:v("f-ten"), zalo:v("f-zalo"), email:v("f-email"), vaitro:v("f-vaitro"), tinhhuong:v("f-tinhhuong"),
+                cua_vao:v("f-cuavao"), nguon:v("f-nguon"), website:v("f-website") };
+  if (!row.ten || !row.zalo || !row.vaitro || !row.tinhhuong) { err.textContent = "Cần điền họ tên, số Zalo và chọn cả hai câu."; err.hidden = false; return; }
+  if (!/^[0-9 +.]{9,15}$/.test(row.zalo)) { err.textContent = "Số Zalo chỉ gồm chữ số, từ 9 đến 15 ký tự."; err.hidden = false; return; }
+  if (!CONFIG.SCRIPT_URL) { err.textContent = "Trang chưa được nối với Google Sheets (CONFIG.SCRIPT_URL đang trống)."; err.hidden = false; return; }
+  const btn = $("f-btn"); btn.disabled = true; btn.textContent = "Đang gửi…";
+  try {
+    await fetch(CONFIG.SCRIPT_URL, { method:"POST", mode:"no-cors", body:new URLSearchParams(row) });
+    $("f").hidden = true; $("f-done").hidden = false;
+  } catch(e) {
+    err.textContent = "Chưa gửi được. Kiểm tra mạng rồi bấm gửi lại."; err.hidden = false;
+  }
+  btn.disabled = false; btn.textContent = "Gửi cho tôi bản đầy đủ";
+});
+
+route();
+</script>
+</body>
+</html>
