@@ -256,6 +256,8 @@ $("f").addEventListener("submit", async ev => {
                 cua_vao:v("f-cuavao"), nguon:v("f-nguon"), website:v("f-website") };
   if (!row.ten || !row.zalo || !row.vaitro || !row.tinhhuong) { err.textContent = "Cần điền họ tên, số Zalo và chọn cả hai câu."; err.hidden = false; return; }
   if (!/^[0-9 +.]{9,15}$/.test(row.zalo)) { err.textContent = "Số Zalo chỉ gồm chữ số, từ 9 đến 15 ký tự."; err.hidden = false; return; }
+  // Email không bắt buộc, nhưng nếu có điền thì phải đúng dạng ten@tenmien.duoi
+  if (row.email && !/^[^\s@]+@[^\s@.]+(\.[^\s@.]+)+$/.test(row.email)) { err.textContent = "Email chưa đúng định dạng, ví dụ: tenban@gmail.com. Bạn có thể để trống ô này."; err.hidden = false; $("f-email").focus(); return; }
   if (!CONFIG.SCRIPT_URL) { err.textContent = "Trang chưa được nối với Google Sheets (CONFIG.SCRIPT_URL đang trống)."; err.hidden = false; return; }
   const btn = $("f-btn"); btn.disabled = true; btn.textContent = "Đang gửi…";
   try {
